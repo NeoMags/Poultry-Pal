@@ -32,7 +32,7 @@ import * as XLSX from "xlsx"
 const statusVariant = {
   Paid: "secondary",
   Pending: "destructive",
-}
+} as const
 
 interface PurchaseOrderDetailSheetProps {
     po: PurchaseOrder | null, 

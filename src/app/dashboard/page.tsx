@@ -96,7 +96,7 @@ export default function DashboardPage() {
         return sum + stockInKg;
     }, 0);
     // Arbitrary total capacity for percentage view, e.g., 20000 kg
-    const totalCapacity = 20000;
+    const totalCapacity: number = 20000;
     if (totalCapacity === 0) return 0;
     return Math.min(100, Math.round((currentStock / totalCapacity) * 100));
   }, [feedStockData, isLoading]);

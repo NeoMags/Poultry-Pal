@@ -452,7 +452,7 @@ interface FarmContextType {
   addVehicle: (vehicle: Omit<Vehicle, 'id'>) => { success: boolean, message: string };
   addFuelLog: (log: Omit<FuelLog, 'id'>) => { success: boolean; message: string; };
   addVehicleMaintenanceLog: (log: Omit<VehicleMaintenanceLog, 'id'>) => { success: boolean; message: string; };
-  addCustomer: (customer: Omit<Customer, 'id'>) => { success: boolean, message: string };
+  addCustomer: (customer: Omit<Customer, 'id' | 'emptyTraysHeld'>) => { success: boolean, message: string };
   addDispatch: (dispatch: Omit<Dispatch, 'invoiceId' | 'date' | 'status' | 'driver'>) => { success: boolean, message: string };
   updateDispatchStatus: (dispatchId: string, status: Dispatch['status']) => { success: boolean, message: string };
   logTrayCollection: (customerId: string, traysCollected: number) => { success: boolean; message: string; };
@@ -465,12 +465,12 @@ interface FarmContextType {
   addRouteName: (routeName: string) => { success: boolean; message: string; };
   addBankAccount: (account: Omit<BankAccount, 'id'>) => { success: boolean; message: string; };
   addExpense: (expense: Omit<Expense, 'id' | 'date'>) => { success: boolean; message: string; };
-  addPayment: (payment: Omit<Payment, 'id' | 'date'>) => { success: boolean, message: string; };
+  addPayment: (payment: Omit<Payment, 'id' | 'date'> & { date?: string }) => { success: boolean, message: string; };
   addCreditNote: (note: Omit<CreditNote, 'id' | 'date'>) => { success: boolean; message: string; };
-  addDebitNote: (note: Omit<DebitNote, 'id'>) => { success: boolean; message: string; };
+  addDebitNote: (note: Omit<DebitNote, 'id' | 'date'>) => { success: boolean; message: string; };
   addProject: (title: string) => { success: boolean; message: string; };
   addTask: (taskData: Omit<Task, 'id' | 'status'>) => { success: boolean; message: string; };
-  updateTask: (taskId: string, updates: Partial<Omit<Task, 'id' | 'projectId' | 'title' | 'assignedTo'>>) => { success: boolean; message: string; };
+  updateTask: (taskId: string, updates: Partial<Omit<Task, 'id' | 'projectId' | 'title'>>) => { success: boolean; message: string; };
   deleteTask: (taskId: string) => { success: boolean; message: string; };
   updateFeedSettings: (settings: Partial<FeedSettings>) => void;
   updateAlertConfig: (alertId: string, updates: Partial<AlertConfig>) => { success: boolean; message: string; };
@@ -551,16 +551,17 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 // Normalization function for Item Categories
 function normalizeItemCategories(value: unknown): ItemCategory[] {
-    if (!Array.isArray(value)) {
+    let list: unknown[];
+    if (Array.isArray(value)) {
+        list = value;
+    } else if (isRecord(value) && Array.isArray(value.itemCategories)) {
         // Handle cases where it might be nested, e.g., { itemCategories: [...] }
-        if (isRecord(value) && 'itemCategories' in value && Array.isArray(value.itemCategories)) {
-            value = value.itemCategories;
-        } else {
-            return []; // Return empty array if the structure is completely unexpected
-        }
+        list = value.itemCategories;
+    } else {
+        return []; // Return empty array if the structure is completely unexpected
     }
 
-    return value.map((item, index) => {
+    return list.map((item, index) => {
         if (isRecord(item) && 'name' in item && typeof item.name === 'string') {
             // It's already in the correct object format
             return {
@@ -703,8 +704,9 @@ export const FarmProvider = ({ children }: { children: ReactNode }) => {
 
       let currentCompanyId = localStorage.getItem(ACTIVE_COMPANY_KEY);
       if (!currentCompanyId && parsedCompanies.length > 0) {
-        currentCompanyId = parsedCompanies[0].id;
-        localStorage.setItem(ACTIVE_COMPANY_KEY, currentCompanyId);
+        const firstCompanyId: string = parsedCompanies[0].id;
+        currentCompanyId = firstCompanyId;
+        localStorage.setItem(ACTIVE_COMPANY_KEY, firstCompanyId);
       }
       setActiveCompanyId(currentCompanyId);
 
@@ -1713,7 +1715,7 @@ export const FarmProvider = ({ children }: { children: ReactNode }) => {
     return { success: true, message: "Maintenance log added successfully." };
   };
 
-  const addCustomer = (customer: Omit<Customer, 'id'>): { success: boolean, message: string } => {
+  const addCustomer = (customer: Omit<Customer, 'id' | 'emptyTraysHeld'>): { success: boolean, message: string } => {
     if (customerData.some(c => c.name.toLowerCase() === customer.name.toLowerCase().trim())) {
       return { success: false, message: "A customer with this name already exists." };
     }
@@ -1884,7 +1886,7 @@ export const FarmProvider = ({ children }: { children: ReactNode }) => {
     return { success: true, message: "Expense logged successfully." };
   }
 
-  const addPayment = (payment: Omit<Payment, 'id' | 'date'>): { success: boolean, message: string } => {
+  const addPayment = (payment: Omit<Payment, 'id' | 'date'> & { date?: string }): { success: boolean, message: string } => {
     const newId = payment.purchaseOrderId ? `PAY-${payment.purchaseOrderId}` : `PAY-${Date.now()}`;
     const newPayment: Payment = { id: newId, date: new Date().toISOString(), ...payment };
     setPaymentData(prev => [newPayment, ...prev]);
@@ -1911,7 +1913,7 @@ export const FarmProvider = ({ children }: { children: ReactNode }) => {
     return { success: true, message: "Credit note logged successfully." };
   }
 
-  const addDebitNote = (note: Omit<DebitNote, 'id'>): { success: boolean; message: string; } => {
+  const addDebitNote = (note: Omit<DebitNote, 'id' | 'date'>): { success: boolean; message: string; } => {
     const newId = `DN-${note.entityType.substring(0,3).toUpperCase()}-${Date.now()}`;
     const newNote: DebitNote = {
       ...note,
@@ -1948,7 +1950,7 @@ export const FarmProvider = ({ children }: { children: ReactNode }) => {
     return { success: true, message: "Task added." };
   };
   
-  const updateTask = (taskId: string, updates: Partial<Omit<Task, 'id' | 'projectId' | 'title' | 'assignedTo'>>): { success: boolean; message: string } => {
+  const updateTask = (taskId: string, updates: Partial<Omit<Task, 'id' | 'projectId' | 'title'>>): { success: boolean; message: string } => {
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
     const updatedTask = tasks.find(t => t.id === taskId);
     addLogEntry("Task Manager", "Updated Task", `Task ID: ${taskId}, Updates: ${JSON.stringify(updates)}`);

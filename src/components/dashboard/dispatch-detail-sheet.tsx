@@ -32,7 +32,7 @@ const statusVariant = {
   Delivered: "secondary",
   "In Transit": "default",
   Pending: "destructive",
-}
+} as const
 
 interface DispatchDetailSheetProps {
     dispatch: Dispatch | null, 
@@ -72,8 +72,8 @@ export default function DispatchDetailSheet({ dispatch, isOpen, onOpenChange }: 
         doc.text(`From: ${activeCompanyName}`, 14, 50);
 
         const tableBody = dispatch.dispatchType === 'Eggs'
-            ? [['Eggs', dispatch.eggs, dispatch.trays, dispatch.pricePerEgg?.toFixed(2), dispatch.totalAmount.toFixed(2)]]
-            : [['Chicks', dispatch.chickQuantity, '-', dispatch.pricePerChick?.toFixed(2), dispatch.totalAmount.toFixed(2)]];
+            ? [['Eggs', dispatch.eggs ?? '', dispatch.trays ?? '', dispatch.pricePerEgg?.toFixed(2) ?? '', dispatch.totalAmount.toFixed(2)]]
+            : [['Chicks', dispatch.chickQuantity ?? '', '-', dispatch.pricePerChick?.toFixed(2) ?? '', dispatch.totalAmount.toFixed(2)]];
 
         autoTable(doc, {
             startY: 60,

@@ -132,7 +132,7 @@ export async function getHealthAnomalyAlerts(mortalityData: string, feedConsumpt
   try {
     if (!process.env.GENKIT_API_KEY && !process.env.GOOGLE_API_KEY) {
       console.warn("Genkit/Google API key not found. Returning mock health alerts.");
-      const mockAlerts = {
+      const mockAlerts: HealthAnomalyOutput = {
         alerts: [
           { severity: 'High', description: 'Unusually high mortality spike detected on Oct 20 in Shed C. Immediate investigation recommended.' },
           { severity: 'Medium', description: 'Feed consumption in Shed A has dropped by 15% over the last 3 days. Monitor flock for signs of illness.' },

@@ -92,7 +92,7 @@ const SetThresholdDialog = ({ supplier, open, onOpenChange }: { supplier: Suppli
 
     const handleSave = () => {
         const value = threshold ? parseFloat(threshold) : undefined;
-        if (threshold && (isNaN(value) || value < 0)) {
+        if (threshold && (value === undefined || isNaN(value) || value < 0)) {
             toast({ title: "Invalid Input", description: "Please enter a valid, non-negative number.", variant: "destructive" });
             return;
         }

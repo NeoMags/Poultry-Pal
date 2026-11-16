@@ -181,7 +181,7 @@ export default function NewTransactionSheet({
             }
              const result = logPaymentForPO(selectedPoId, {
                 method: paymentMethod,
-                bankAccountId,
+                bankAccountId: paymentBankId,
                 chequeNumber,
                 utrNumber,
             });

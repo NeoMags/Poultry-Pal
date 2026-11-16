@@ -39,7 +39,7 @@ import PurchaseOrderDetailSheet from "@/components/dashboard/purchase-order-deta
 const statusVariant = {
   Paid: "secondary",
   Pending: "destructive",
-}
+} as const
 
 type SortKey = keyof PurchaseOrder | 'supplierName';
 type SortDirection = "asc" | "desc";
@@ -92,8 +92,8 @@ export default function PurchaseOrdersPage() {
                 return statusMatch && supplierMatch;
             })
             .sort((a, b) => {
-                let valA: string | number;
-                let valB: string | number;
+                let valA: unknown;
+                let valB: unknown;
 
                 if (sortKey === 'supplierName') {
                     valA = getSupplierName(a.supplierId);

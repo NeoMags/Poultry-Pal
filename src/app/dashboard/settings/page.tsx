@@ -88,9 +88,10 @@ const EditAlertDialog = ({ alert, isOpen, onOpenChange, onSave }: { alert: Alert
 
     const handleSave = () => {
         const value = threshold ? parseFloat(threshold) : undefined;
-        if (threshold && (isNaN(value) || value < 0)) {
+        if (threshold && (value === undefined || isNaN(value) || value < 0)) {
             // Simple validation, can be enhanced
-            alert("Please enter a valid, non-negative number.");
+            // `alert` here is the AlertConfig prop, so call the browser dialog explicitly
+            window.alert("Please enter a valid, non-negative number.");
             return;
         }
         onSave(value);

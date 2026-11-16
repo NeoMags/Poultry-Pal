@@ -57,7 +57,7 @@ const statusVariant = {
   "In Use": "default",
   Maintenance: "destructive",
   Inactive: "outline"
-};
+} as const;
 
 const attendanceStatusVariant = {
   Present: "secondary",

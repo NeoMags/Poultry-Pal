@@ -28,8 +28,9 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Calendar } from "@/components/ui/calendar"
 import { useFarm, Vehicle, FuelLog, VehicleMaintenanceLog } from "@/context/FarmContext"
-import { Truck, Hash, Gauge, Droplets, Calendar, Wrench, PlusCircle } from "lucide-react"
+import { Truck, Hash, Gauge, Droplets, Calendar as CalendarIcon, Wrench, PlusCircle } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
@@ -172,8 +173,8 @@ export default function VehicleDetailSheet({ vehicle, isOpen, onOpenChange }: Ve
                        <div className="grid grid-cols-2 gap-y-4 gap-x-2 py-4">
                            <InfoRow icon={<Hash />} label="Chassis Number" value={vehicle.chassisNumber} />
                            <InfoRow icon={<Hash />} label="Engine Number" value={vehicle.engineNumber} />
-                           <InfoRow icon={<Calendar />} label="Registration Date" value={format(parseISO(vehicle.registrationDate), 'PP')} />
-                           <InfoRow icon={<Calendar />} label="Insurance Expiry" value={format(parseISO(vehicle.insuranceDate), 'PP')} />
+                           <InfoRow icon={<CalendarIcon />} label="Registration Date" value={format(parseISO(vehicle.registrationDate), 'PP')} />
+                           <InfoRow icon={<CalendarIcon />} label="Insurance Expiry" value={format(parseISO(vehicle.insuranceDate), 'PP')} />
                        </div>
                     </TabsContent>
                     <TabsContent value="fuel" className="mt-4">
@@ -196,7 +197,7 @@ export default function VehicleDetailSheet({ vehicle, isOpen, onOpenChange }: Ve
                                             <div className="space-y-2">
                                                 <Label>Date</Label>
                                                 <Popover open={isFuelDatePickerOpen} onOpenChange={setIsFuelDatePickerOpen}>
-                                                    <PopoverTrigger asChild><Button variant="outline" className={cn(!fuelDate && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{fuelDate ? format(fuelDate, "PPP") : "Select date"}</Button></PopoverTrigger>
+                                                    <PopoverTrigger asChild><Button variant="outline" className={cn(!fuelDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4"/>{fuelDate ? format(fuelDate, "PPP") : "Select date"}</Button></PopoverTrigger>
                                                     <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={fuelDate} onSelect={(date) => { setFuelDate(date); setIsFuelDatePickerOpen(false); }} /></PopoverContent>
                                                 </Popover>
                                             </div>
@@ -237,7 +238,7 @@ export default function VehicleDetailSheet({ vehicle, isOpen, onOpenChange }: Ve
                                             <div className="space-y-2">
                                                 <Label>Date</Label>
                                                 <Popover open={isMaintDatePickerOpen} onOpenChange={setIsMaintDatePickerOpen}>
-                                                    <PopoverTrigger asChild><Button variant="outline" className={cn(!maintDate && "text-muted-foreground")}><Calendar className="mr-2 h-4 w-4"/>{maintDate ? format(maintDate, "PPP") : "Select date"}</Button></PopoverTrigger>
+                                                    <PopoverTrigger asChild><Button variant="outline" className={cn(!maintDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4"/>{maintDate ? format(maintDate, "PPP") : "Select date"}</Button></PopoverTrigger>
                                                     <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={maintDate} onSelect={(date) => { setMaintDate(date); setIsMaintDatePickerOpen(false); }} /></PopoverContent>
                                                 </Popover>
                                             </div>
